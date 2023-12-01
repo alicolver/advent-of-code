@@ -28,13 +28,6 @@ getInt' [x] =
     then digitToInt x
     else 0
 getInt' xs =
-    if getIntFromString xs /= 0
-    then getIntFromString xs
-    else 0
-
-getIntFromString :: String -> Int
-getIntFromString [] = 0
-getIntFromString xs =
     if stringToNumber xs /= 0
     then stringToNumber xs
     else 0
