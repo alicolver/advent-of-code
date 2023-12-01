@@ -10,14 +10,11 @@ day1 :: [String] -> Int
 day1 input = sum(map getTwoDigitInteger input)
 
 getTwoDigitInteger :: String -> Int
-getTwoDigitInteger xs = (10 * getLeftInt xs) + getRightInt xs
+getTwoDigitInteger xs = (10 * getInt xs) + getInt (reverse xs)
 
-getLeftInt :: String -> Int
-getLeftInt [] = 0
-getLeftInt (x:xs) =
+getInt :: String -> Int
+getInt [] = 0
+getInt (x:xs) =
     if isDigit x
     then digitToInt x
-    else getLeftInt xs
-
-getRightInt :: String -> Int
-getRightInt xs = getLeftInt(reverse xs)
+    else getInt xs
