@@ -2,7 +2,7 @@ import Data.Char (isDigit, digitToInt)
 
 main :: IO ()
 main = do
-    input <- readFile "1/input.txt"
+    input <- readFile "01/input.txt"
     let splitInput = lines input
     print (day1 splitInput)
 
