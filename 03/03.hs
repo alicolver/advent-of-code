@@ -22,7 +22,7 @@ main = do
     let numbers = getNumbers (zip [0..] splitInput)
     let symbols = getSymbols (zip [0..] splitInput)
     let numbersNearSymbol = filter (isNumberNearSymbol symbols) numbers
-    print (sum (map getValue numbersNearSymbol))
+    print (sum (map value numbersNearSymbol))
     let gears = getGears (zip [0..] splitInput)
     print (sum (map (getGearValue numbers) gears))
 
@@ -44,9 +44,6 @@ inColRange symbolCol number = symbolCol >= (start number - 1) && symbolCol <= (e
 
 inRowRange :: Int -> Int -> Bool
 inRowRange symbolRow numberRow = (symbolRow <= numberRow + 1) && (symbolRow >= numberRow - 1)
-
-getValue :: Number -> Int
-getValue = value
 
 getNumbers :: [(Int, String)] -> [Number]
 getNumbers = flatmap getNumbers'
