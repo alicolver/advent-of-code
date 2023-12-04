@@ -15,22 +15,16 @@ main = do
     let parsedCards = map parseCard splitInput
     let scores = map getScoreForGame parsedCards
     print (sum scores)
-    let counted = countCard (map initFreq parsedCards) (map getNumMatches parsedCards)
+    let counted = countCard (zip parsedCards (replicate (length parsedCards) 1)) (map getNumMatches parsedCards)
     print (sum (map snd counted))
 
 countCard :: [(Card, Int)] -> [Int] -> [(Card,Int)]
-countCard [] _ = []
 countCard _ [] = []
-countCard ((card,freq):cards) (score:scores) = (card,freq) : countCard updated scores
-    where updated = countCards' cards freq score
+countCard ((card,freq):cards) (score:scores) = (card,freq) : countCard (countCards' cards freq score) scores
 
 countCards' :: [(Card, Int)] -> Int -> Int -> [(Card, Int)]
-countCards' [] _ _ = []
 countCards' cards _ 0 = cards
 countCards' ((card,freq):cards) prevFreq score =  (card, freq + prevFreq) : countCards' cards prevFreq (score - 1)
-
-initFreq :: Card -> (Card, Int)
-initFreq card = (card, 1)
 
 getScoreForGame :: Card -> Int
 getScoreForGame card
