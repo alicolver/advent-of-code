@@ -1,5 +1,6 @@
 import Data.Char (isDigit, digitToInt)
 import Data.List
+import Utils.Utils
 
 main :: IO ()
 main = do
@@ -31,9 +32,6 @@ getInt' xs =
     if stringToNumber xs /= 0
     then stringToNumber xs
     else 0
-
-sublists :: String -> [String]
-sublists = concatMap (tail . inits) . tails
 
 stringToNumber :: String -> Int
 stringToNumber "one" = 1

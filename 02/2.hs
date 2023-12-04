@@ -4,7 +4,7 @@ main :: IO ()
 main = do
     input <- readFile "02/input.txt"
     let splitInput = lines input
-    print (sum(map getDayVal splitInput))
+    print (sum (map getDayVal splitInput))
 
 getDayVal :: String -> Int
 getDayVal x
@@ -13,13 +13,13 @@ getDayVal x
     where splitUp = splitStringOn (':'==) x
 
 isValidGame :: String -> Bool
-isValidGame bagPulls = all ((==True) . isValidPull) (splitStringOn (';'==) bagPulls)
+isValidGame bagPulls = all isValidPull (splitStringOn (';'==) bagPulls)
 
 isValidPull :: String -> Bool
-isValidPull x = all ((==True) . isValidColor) (splitStringOn (','==) x)
+isValidPull x = all isValidColor (splitStringOn (','==) x)
 
 isValidColor :: String -> Bool
-isValidColor x = isWithinLimit (read (head numColor) :: Int) (numColor !! 1) 
+isValidColor x = isWithinLimit (read (head numColor) :: Int) (numColor !! 1)
     where numColor = splitStringOn (' '==) x
 
 isWithinLimit :: Int -> String -> Bool
