@@ -1,5 +1,7 @@
 module Utils.StringUtils where
 import Data.Char
+import Text.Parsec.String
+import Text.Parsec
 
 splitStringOn :: (Char -> Bool) -> String -> [String]
 splitStringOn p s =  case dropWhile p s of
@@ -27,3 +29,6 @@ extractNumbers xs = do
     let afterDroppingNumber = dropWhile isDigit afterDroppingNonDigits
     if null num then []
     else (read num :: Int) : extractNumbers afterDroppingNumber
+
+integer :: Parser Int
+integer = read <$> many1 digit
