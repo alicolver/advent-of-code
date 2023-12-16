@@ -4,15 +4,15 @@ main :: IO ()
 main = do 
     input <- readFile "11/input.txt"
     let m = lines input
-    let expanded = transpose (expand (transpose (expand m)))
-    let galaxyCoords = findGalaxies '#' expanded
-    print (calcPathLengths galaxyCoords)
-    let rowIndices = map snd (expandIntoCoord m 0)
-    let colIndices = map snd (expandIntoCoord (transpose m) 0)
-    let coordinates = addCoordinates m rowIndices colIndices 
-    print (coordinates)
-    let p2Cs = fg2 coordinates
-    print (calcPathLengths (p2Cs))
+    print (calc m 1)
+    print (calc m 1_000_000)
+
+calc :: [[Char]] -> Int -> Int 
+calc m v = calcPathLengths (fg coordinates)
+    where 
+        rowIndices = map snd (expandIntoCoord m 0 v)
+        colIndices = map snd (expandIntoCoord (transpose m) 0 v)
+        coordinates = addCoordinates m rowIndices colIndices 
 
 addCoordinates :: [[Char]] -> [Int] -> [Int] -> [(Char, (Int, Int))]
 addCoordinates [] [] _ = []
@@ -30,22 +30,12 @@ calcPathLengths' :: (Int, Int) -> [(Int, Int)] -> Int
 calcPathLengths' _ [] = 0
 calcPathLengths' (r1, c1) ((r2,c2):gs) = abs (r1 - r2) + abs (c1 - c2) + calcPathLengths' (r1, c1) gs
 
-expand :: [[Char]] -> [[Char]]
-expand = concatMap (\x -> if all (=='.') x then [x, x] else [x])
-
-expandIntoCoord :: [[Char]] -> Int -> [([Char], Int)]
-expandIntoCoord [] cnt = []
-expandIntoCoord (r:rs) cnt = (r, newCnt) : expandIntoCoord rs newCnt 
+expandIntoCoord :: [[Char]] -> Int -> Int -> [([Char], Int)]
+expandIntoCoord [] cnt _ = []
+expandIntoCoord (r:rs) cnt v = (r, newCnt) : expandIntoCoord rs newCnt v
     where 
-        newCnt = if all (=='.') r then cnt + (1_000_000) else cnt + 1
+        newCnt = if all (=='.') r then cnt + v else cnt + 1
 
-findGalaxies :: Char -> [[Char]] -> [(Int, Int)]
-findGalaxies char grid = [ (row, col)
-  | (row, rowChars) <- zip [0..] grid
-  , (col, gridChar) <- zip [0..] rowChars
-  , gridChar == char
-  ]
-
-fg2 :: [(Char, (Int, Int))] -> [(Int, Int)]
-fg2 [] = []
-fg2 ((c, (row, col)):cs) = if c == '#' then (row, col) : fg2 cs else fg2 cs 
+fg :: [(Char, (Int, Int))] -> [(Int, Int)]
+fg [] = []
+fg ((c, (row, col)):cs) = if c == '#' then (row, col) : fg cs else fg cs 
