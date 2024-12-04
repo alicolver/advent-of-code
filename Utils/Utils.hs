@@ -11,3 +11,10 @@ sublists = concatMap (tail . inits) . tails
 
 frequencyMap :: (Ord a) => [a] -> Map.Map a Int
 frequencyMap = foldr (\x -> Map.insertWith (+) x 1) Map.empty
+
+removeOne :: [a] -> [[a]]
+removeOne xs = [take i xs ++ drop (i + 1) xs | i <- [0 .. length xs - 1]]
+
+adjacentPairs :: [Int] -> [(Int, Int)]
+adjacentPairs [x] = []
+adjacentPairs (x:xs) = zip (x:xs) (xs)
