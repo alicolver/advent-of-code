@@ -2,6 +2,7 @@ module Day4 (
     day4
 ) where
 
+import Data.List ( transpose )
 import Lib
 import Data.Universe.Helpers
 
@@ -29,4 +30,4 @@ getAllArrays x = x ++
                 diagonals (transpose (map reverse x))
 
 isValidDiag :: ([Char], [Char]) -> Bool
-isValidDiag (a,b) =  (doesMatch "MAS|SAM" a) && (doesMatch "MAS|SAM" b)
+isValidDiag (a,b) =  doesMatch "MAS|SAM" a && doesMatch "MAS|SAM" b

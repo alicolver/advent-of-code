@@ -2,8 +2,7 @@ module Day5 (
     day5
 ) where
 
-import Data.Graph
-import Data.List
+import Data.List ( sortBy )
 import Text.Parsec
 import Text.Parsec.String
 
@@ -40,7 +39,7 @@ part1 :: [(Int,Int)] -> [[Int]] -> Int
 part1 rules routes = sum (map getMid (filter (isValid rules) routes))
 
 isValid :: [(Int, Int)] -> [Int] -> Bool
-isValid rules xs = all (\(r1, r2) -> isValidPair rules r1 r2) (zip xs (tail xs))
+isValid rules xs = all (uncurry (isValidPair rules)) (zip xs (tail xs))
 
 isValidPair :: [(Int, Int)] -> Int -> Int -> Bool
 isValidPair rules r1 r2 = all (\(a, b) -> not (a == r2 && b == r1)) rules
@@ -57,4 +56,4 @@ sortByRule rules a b
     | otherwise = EQ
 
 getMid :: [a] -> a
-getMid xs = xs !! ((length xs) `div` 2)
+getMid xs = xs !! (length xs `div` 2)

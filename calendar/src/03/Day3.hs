@@ -25,17 +25,17 @@ parseWord x = case t x of
 day3 :: IO ()
 day3 = do
     print (parseWord "mul(123,45)")
-    input <- readFile "/Users/alicolver/projects/advent-of-code/calendar/src/03/input.txt"
-    let x =  (findMatches "mul\\(([0-9]{1,3}),([0-9]{1,3})\\)|do\\(\\)|don't\\(\\)" input)
+    input <- readFile "src/03/input.txt"
+    let x =  findMatches "mul\\(([0-9]{1,3}),([0-9]{1,3})\\)|do\\(\\)|don't\\(\\)" input
     print x
     let y = map parseWord x
     print (day3_2 y 0 True)
 
 day3' :: [(Int, Int)] -> Int
-day3' x = sum (map (\(a, b) -> a * b) x)
+day3' x = sum (map (uncurry (*)) x)
 
 day3_2 :: [Instr] -> Int -> Bool -> Int
-day3_2 [] x _ = x 
+day3_2 [] x _ = x
 day3_2 ((Mul a b):is) x c = day3_2 is (if c then x + (a * b) else x) c
-day3_2 (Do:is) x b = day3_2 is x True
-day3_2 (Dont:is) x b = day3_2 is x False
+day3_2 (Do:is) x _ = day3_2 is x True
+day3_2 (Dont:is) x _ = day3_2 is x False

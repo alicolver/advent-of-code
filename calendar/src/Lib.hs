@@ -18,7 +18,7 @@ doesMatch pattern input = input =~ pattern
 
 getSlidingWindow2d :: Int -> [[a]] -> [[[a]]]
 getSlidingWindow2d window matrix
-    | length matrix < window || any (< window) (map length matrix) = []
+    | length matrix < window || any ((< window) . length) matrix = []
     | otherwise = [ getSubMatrix i j | i <- [0 .. numRows - window], j <- [0 .. numCols - window] ]
     where
         numRows = length matrix
