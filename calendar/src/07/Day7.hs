@@ -4,6 +4,7 @@ module Day7 (
 
 import Text.Parsec
 import Text.Parsec.String
+import Debug.Trace
 
 data Ent = Ent {
     target :: Int,
@@ -25,18 +26,23 @@ parseEnt input = case parse ent "" input of
 
 day7 :: IO ()
 day7 = do
-    input <- readFile "src/07/test.txt"
+    input <- readFile "src/07/input.txt"
     let psd = map parseEnt (lines input)
     print (sum (map target (filter part1 psd)))
+    print (sum (map target (filter part2 psd)))
 
 part1 :: Ent -> Bool
-part1 (Ent t ns) = 0 == foldr apply t ns
+part1 (Ent t ns) = recursiveCheck (reverse ns) t
 
-apply :: Int -> Int -> Int
-apply a b
-    | a == b = 0
-    | isFactor a b = b `div` a
-    | otherwise = b - a
+recursiveCheck :: [Int] -> Int -> Bool
+recursiveCheck [] _ = False
+recursiveCheck [a] t = a == t
+recursiveCheck (a:as) t
+    | isFactor a t = recursiveCheck (as) (t `div` a) || recursiveCheck (as) (t - a)
+    | otherwise = recursiveCheck (as) (t - a)
+
+addDigit :: Int -> Int -> Int
+addDigit x y = (read ((show x) ++ (show y)))
 
 isFactor :: Int -> Int -> Bool
 isFactor a b = b `mod` a == 0
