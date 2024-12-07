@@ -29,6 +29,8 @@ library
       Day3
       Day4
       Day5
+      Day6
+      Day7
   other-modules:
       Paths_calendar
   autogen-modules:
@@ -38,6 +40,8 @@ library
       src/03
       src/04
       src/05
+      src/06
+      src/07
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
       base >=4.7 && <5
