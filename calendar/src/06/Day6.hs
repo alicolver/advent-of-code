@@ -3,6 +3,7 @@ module Day6 (
 ) where
 
 import Data.List ( find, nub )
+import Lib (mapWithIndices)
 
 data Dir = U | L | D | R
     deriving (Eq, Show)
@@ -70,7 +71,3 @@ isStart (c, _) = c == '^'
 
 isInterestingChar :: (Char, (Int, Int)) -> Bool
 isInterestingChar (c, _) = c `elem` ['#', '^']
-
-mapWithIndices :: [[a]] -> [[(a, (Int, Int))]]
-mapWithIndices matrix =
-    [ [ (i, (c, r)) | (c, i) <- zip [0..] row ] | (r, row) <- zip [0..] (reverse matrix) ]

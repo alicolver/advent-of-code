@@ -2,10 +2,15 @@ module Lib
     ( numMatches,
     doesMatch,
     getSlidingWindow2d,
-    getDiagonals
+    getDiagonals,
+    mapWithIndices
     ) where
 
 import Text.Regex.Posix
+
+mapWithIndices :: [[a]] -> [[(a, (Int, Int))]]
+mapWithIndices matrix =
+    [ [ (i, (c, r)) | (c, i) <- zip [0..] row ] | (r, row) <- zip [0..] (reverse matrix) ]
 
 numMatches :: String -> String -> Int
 numMatches reg i = length (findMatches reg i)
