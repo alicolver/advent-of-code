@@ -4,7 +4,6 @@ module Day7 (
 
 import Text.Parsec
 import Text.Parsec.String
-import Debug.Trace
 
 data Ent = Ent {
     target :: Int,
@@ -32,17 +31,21 @@ day7 = do
     print (sum (map target (filter part2 psd)))
 
 part1 :: Ent -> Bool
-part1 (Ent t ns) = recursiveCheck (reverse ns) t
+part1 (Ent t ns) = checkForward ns Nothing t False
 
-recursiveCheck :: [Int] -> Int -> Bool
-recursiveCheck [] _ = False
-recursiveCheck [a] t = a == t
-recursiveCheck (a:as) t
-    | isFactor a t = recursiveCheck (as) (t `div` a) || recursiveCheck (as) (t - a)
-    | otherwise = recursiveCheck (as) (t - a)
+part2 :: Ent -> Bool
+part2 (Ent t ns) = checkForward ns Nothing t True
 
-addDigit :: Int -> Int -> Int
-addDigit x y = (read ((show x) ++ (show y)))
+checkForward :: [Int] -> Maybe Int -> Int -> Bool -> Bool
+checkForward [] acc t _ = acc == Just t
+checkForward (a:as) Nothing t conOp = checkForward as (Just a) t conOp
+checkForward (a:as) (Just acc) t conOp
+    | a * acc > t = add || cons
+    | otherwise = mul || add || cons
+    where
+        cons = conOp && checkForward as (Just (addDigits acc a)) t conOp
+        add = checkForward as (Just (a+acc)) t conOp
+        mul = checkForward as (Just (a*acc)) t conOp
 
-isFactor :: Int -> Int -> Bool
-isFactor a b = b `mod` a == 0
+addDigits :: Int -> Int -> Int
+addDigits x y = read (show x ++ show y)
