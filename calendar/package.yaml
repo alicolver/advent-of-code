@@ -45,6 +45,7 @@ library:
     - src/05
     - src/06
     - src/07
+    - src/08
 
 
 executables:
