@@ -33,6 +33,7 @@ library
       Day7
       Day8
       Day9
+      Day10
       Day11
   other-modules:
       Paths_calendar
@@ -47,6 +48,7 @@ library
       src/07
       src/08
       src/09
+      src/10
       src/11
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
