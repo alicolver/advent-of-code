@@ -25,6 +25,7 @@ dependencies:
 - universe-base >= 1.0.2.1
 - parsec >= 3.1.16.1
 - containers >= 0.6.7
+- MemoTrie >= 0.6.10
 
 ghc-options:
 - -Wall
@@ -47,6 +48,7 @@ library:
     - src/07
     - src/08
     - src/09
+    - src/11
 
 
 executables:

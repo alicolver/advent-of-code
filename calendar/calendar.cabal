@@ -33,6 +33,7 @@ library
       Day7
       Day8
       Day9
+      Day11
   other-modules:
       Paths_calendar
   autogen-modules:
@@ -46,9 +47,11 @@ library
       src/07
       src/08
       src/09
+      src/11
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
-      base >=4.7 && <5
+      MemoTrie >=0.6.10
+    , base >=4.7 && <5
     , containers >=0.6.7
     , parsec >=3.1.16.1
     , regex-posix >=0.96.0.1
@@ -65,7 +68,8 @@ executable calendar-exe
       app
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.7 && <5
+      MemoTrie >=0.6.10
+    , base >=4.7 && <5
     , calendar
     , containers >=0.6.7
     , parsec >=3.1.16.1
@@ -84,7 +88,8 @@ test-suite calendar-test
       test
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.7 && <5
+      MemoTrie >=0.6.10
+    , base >=4.7 && <5
     , calendar
     , containers >=0.6.7
     , parsec >=3.1.16.1
