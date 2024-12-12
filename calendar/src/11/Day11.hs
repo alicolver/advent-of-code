@@ -34,8 +34,10 @@ applyRule' :: Int -> Int -> Int
 applyRule' 0 _ = 1
 applyRule' i x
     | x == 0 = applyRule (i-1) 1
-    | even (length stringRep) = applyRule (i-1) (read (take halfLength stringRep)) + applyRule (i-1) (read (drop halfLength stringRep))
+    | even (length stringRep) = applyRule (i-1) firstHalf + applyRule (i-1) secondHalf
     | otherwise = applyRule (i-1) (x * 2024)
     where
         stringRep = show x
         halfLength = length stringRep `div` 2
+        firstHalf = read $ take halfLength stringRep
+        secondHalf = read $ drop halfLength stringRep
