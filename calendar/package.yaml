@@ -50,6 +50,8 @@ library:
     - src/09
     - src/10
     - src/11
+    - src/12
+    - src/13
 
 
 executables:
