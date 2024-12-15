@@ -31,7 +31,7 @@ p1Move bs bounds n = map (moveBot bounds n) bs
 p2 :: [Bot] -> (Int,Int) -> IO ()
 p2 bots (c,r) = do
     print $ show $ snd minScore
-    mapM_ print [[[if (x, y) `elem` map p (p1Move bots (c,r) (snd minScore)) then '#' else '.' | x <- [0..c - 1]] | y <- [0..(r - 1)]] | i <- [0..(c*r)]]
+    mapM_ print [[if (x, y) `elem` map p (p1Move bots (c,r) (snd minScore)) then '#' else '.' | x <- [0..c - 1]] | y <- [0..(r - 1)]]
     where
         allScores = [(getQuads (p1Move bots (c,r) i) (c,r), i) | i <- [0..(c*r)]]
         minScore = minimumBy (comparing fst) allScores
