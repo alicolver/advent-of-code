@@ -5,7 +5,7 @@ import Text.Parsec
 import Text.Parsec.String
 import Data.Maybe (isNothing)
 import Debug.Trace
-import Data.List (sort, group, minimumBy)
+import Data.List (sort, group, minimumBy, intercalate)
 import Data.Ord (comparing)
 
 data Quad = TL | TR | BR | BL | M
@@ -31,17 +31,22 @@ p1Move bs bounds n = map (moveBot bounds n) bs
 p2 :: [Bot] -> (Int,Int) -> IO ()
 p2 bots (c,r) = do
     print $ show $ snd minScore
-    mapM_ print [[if (x, y) `elem` map p (p1Move bots (c,r) (snd minScore)) then '#' else '.' | x <- [0..c - 1]] | y <- [0..(r - 1)]]
+    mapM_ putStrLn [[if (x, y) `elem` map p (p1Move bots (c,r) (snd minScore)) then '#' else '.' | x <- [0..c - 1]] | y <- [0..(r - 1)]]]
+    -- let allGrids = [[[if (x, y) `elem` map p (p1Move bots (c,r) (i)) then '#' else '.' | x <- [0..c - 1]] | y <- [0..(r - 1)]] | i <- [0..(c*r)]]
+    -- mapM_ printGrids (zip allGrids [0..(c*r)])
     where
         allScores = [(getQuads (p1Move bots (c,r) i) (c,r), i) | i <- [0..(c*r)]]
         minScore = minimumBy (comparing fst) allScores
+
+printGrids :: ([String], Int) -> IO ()
+printGrids (g,i) = do
+    writeFile ("src/14/trees/" ++ (show i) ++ ".txt") (intercalate "\n" g)
 
 getQuads :: [Bot] -> Bounds -> Int
 getQuads bots bounds = product (map length botsByQuads)
     where
         botsInQuads = map (quadForBot bounds) bots
-        testThing = zip bots botsInQuads
-        botsByQuads = group (sort (filter (/= M) (map snd testThing)))
+        botsByQuads = group (sort (filter (/= M) (botsInQuads)))
 
 quadForBot :: Bounds -> Bot -> Quad
 quadForBot  (bx,by) (Bot (x,y) _)
