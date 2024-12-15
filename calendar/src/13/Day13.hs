@@ -16,21 +16,18 @@ int = read <$> many1 digit
 
 system :: Parser System
 system = do
-    _ <- string "Button A: X+" >> spaces
-    ax <- int
-    _ <- string ", Y+" >> spaces
-    ay <- int
+    let parseCoordinates prefix xLabel yLabel = do
+            _ <- string prefix >> string xLabel
+            x <- int
+            _ <- string ", " >> string yLabel
+            y <- int
+            return (x, y)
+    (ax, ay) <- parseCoordinates "Button A: " "X+" "Y+"
     _ <- newline
-    _ <- string "Button B: X+"
-    bx <- int
-    _ <- string ", Y+"
-    by <- int
+    (bx, by) <- parseCoordinates "Button B: " "X+" "Y+"
     _ <- newline
-    _ <- string "Prize: X="
-    prizex <- int
-    _ <- string ", Y="
-    prizey <- int
-    return (System (ax,ay) (bx,by) (prizex, prizey))
+    (prizex, prizey) <- parseCoordinates "Prize: " "X=" "Y="
+    return (System (ax, ay) (bx, by) (prizex, prizey))
 
 systemsParser :: Parser [System]
 systemsParser = system `sepBy` many1 newline
@@ -52,9 +49,9 @@ p2multi :: System -> System
 p2multi (System a b (px,py)) = System a b (px+10000000000000,py+10000000000000)
 
 solveSystem :: System -> Integer
-solveSystem (System (ax,ay) (bx,by) (px,py)) = calcSolution det (multiply inverse target)
+solveSystem (System (ax,ay) (bx,by) (px,py)) = calcSolution det $ multiply inverse target
     where
-        matrix = trace (show [[ax,bx],[ay,by]]) (([[ax,bx],[ay,by]]))
+        matrix = [[ax,bx],[ay,by]]
         target = [px,py]
         det = determinant matrix
         inverse = [[by,-bx],[-ay,ax]]
@@ -63,7 +60,7 @@ calcSolution :: Integer -> [Integer] -> Integer
 calcSolution det [a,b]
     | (a `mod` det) /= 0 = 0
     | (b `mod` det) /= 0 = 0
-    | otherwise = (3* (a `div` det)) + (b `div` det)
+    | otherwise = (3 * (a `div` det)) + (b `div` det)
 
 multiply :: [[Integer]] -> [Integer] -> [Integer]
 multiply [[ax,ay],[bx,by]] [px,py] = [((ax*px)+(ay*py)),(bx*px)+(by*py)]
