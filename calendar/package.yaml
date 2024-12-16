@@ -53,6 +53,7 @@ library:
     - src/12
     - src/13
     - src/14
+    - src/15
 
 
 executables:

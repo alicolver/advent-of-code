@@ -38,6 +38,7 @@ library
       Day12
       Day13
       Day14
+      Day15
   other-modules:
       Paths_calendar
   autogen-modules:
@@ -56,6 +57,7 @@ library
       src/12
       src/13
       src/14
+      src/15
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
       MemoTrie >=0.6.10

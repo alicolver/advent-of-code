@@ -31,7 +31,7 @@ p1Move bs bounds n = map (moveBot bounds n) bs
 p2 :: [Bot] -> (Int,Int) -> IO ()
 p2 bots (c,r) = do
     print $ show $ snd minScore
-    mapM_ putStrLn [[if (x, y) `elem` map p (p1Move bots (c,r) (snd minScore)) then '#' else '.' | x <- [0..c - 1]] | y <- [0..(r - 1)]]]
+    mapM_ putStrLn [[if (x, y) `elem` map p (p1Move bots (c,r) (snd minScore)) then '#' else '.' | x <- [0..c - 1]] | y <- [0..(r - 1)]]
     -- let allGrids = [[[if (x, y) `elem` map p (p1Move bots (c,r) (i)) then '#' else '.' | x <- [0..c - 1]] | y <- [0..(r - 1)]] | i <- [0..(c*r)]]
     -- mapM_ printGrids (zip allGrids [0..(c*r)])
     where
