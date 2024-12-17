@@ -3,10 +3,19 @@ module Lib
     doesMatch,
     getSlidingWindow2d,
     getDiagonals,
-    mapWithIndices
+    mapWithIndices,
+    intParser
     ) where
-
+import Text.Parsec
+import Text.Parsec.String
 import Text.Regex.Posix
+import Data.Maybe (isNothing)
+
+intParser :: Parser Int
+intParser = do
+    sign <- optionMaybe (char '-')
+    val <- many1 digit
+    return (if isNothing sign then read val else - (read val))
 
 mapWithIndices :: [[a]] -> [[(a, (Int, Int))]]
 mapWithIndices matrix =

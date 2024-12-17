@@ -24,6 +24,8 @@ day15 = do
     let points = p1' walls boxes weeGuy commands []
     -- mapM_ (printGrids (length (head grid), length grid)) points
     print $ p1 (length grid) (bs (last points))
+    let expanded = map expandRow (lines inputMap)
+    print "sploot"
 
 printGrids :: (Int,Int) -> Res -> IO ()
 printGrids (c,r) points  = do
@@ -39,11 +41,22 @@ printGrids (c,r) points  = do
 p1 :: Int -> [Point] -> Int
 p1 ys boxes = sum $ map (\(x,y) -> ((ys-y-1)*100) + x) boxes
 
+expandRow :: [Char] -> [Char]
+expandRow [] = []
+expandRow (c:cs)
+    | c == '#' = "##" ++ expandRow cs 
+    | c == '.' = ".." ++ expandRow cs
+    | c == 'O' = "[]" ++ expandRow cs
+    | c == '@' = "@." ++ expandRow cs
+    | otherwise = error "Borked!"
+
 p1' :: [Point] -> [Point] -> Point -> [Command] -> [Res] -> [Res]
 p1' walls boxes guy [] res = res ++ [Res walls boxes guy]
 p1' walls boxes weeGuy (c:cs) res = p1' walls newBoxes newWeeGuy cs (res ++ [Res walls boxes weeGuy])
     where
         (newWeeGuy, newBoxes) = getNextPoint walls boxes weeGuy c
+
+
 
 getNextPoint :: [Point] -> [Point] -> Point -> Command -> (Point, [Point])
 getNextPoint walls boxes guy c
