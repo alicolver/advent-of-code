@@ -53,8 +53,23 @@ getComboValue _ x = x
 
 runProgram :: ProgState -> [Int] -> [Int]
 runProgram ps commands
-    | (instPointer ps) + 1 >= length commands = output ps
-    | otherwise = runProgram (handleCommand ps (getCommand (instPointer ps) commands)) commands
+    | instPointer ps + 1 >= length commands = output ps
+    | otherwise = runProgram handledCommand commands
+    where
+        command = getCommand (instPointer ps) commands
+        handledCommand = handleCommand ps command
+
+search :: [Int] -> [Int] -> Int
+search program target = loop a program target
+    where
+        a = if length target == 1 then 0 else 8 * search program (tail target)
+
+loop :: Int -> [Int] -> [Int] -> Int
+loop a program target
+    | runProgram ps program == target = a
+    | otherwise = loop (a+1) program target
+    where
+        ps = ProgState (Registers a 0 0) 0 []
 
 getCommand :: Int -> [Int] -> (Int,Int)
 getCommand ip coms = (coms !! ip, coms !! (ip+1))
@@ -64,6 +79,7 @@ day17 = do
     input <- readFile "src/17/input.txt"
     let program = parseInput input
     print $ runProgram (ProgState (registers program) 0 []) (commands program)
+    print $ search (commands program) (commands program)
 
 registerParser :: String -> Parser Int
 registerParser s = do
