@@ -6,7 +6,7 @@ import Data.List (nub)
 
 day10 :: IO()
 day10 = do
-    input <- readFile "src/10/input.txt"
+    input <- readFile "src/input/10.txt"
     let intPoints = map toInts (lines input)
     let points = mapWithIndices $ intPoints
     let starts = concatMap (filter (\a -> fst a == 0)) points

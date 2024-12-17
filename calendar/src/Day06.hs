@@ -10,7 +10,7 @@ data Dir = U | L | D | R
 
 day6 :: IO ()
 day6 = do
-    rawMap <- readFile "src/06/input.txt"
+    rawMap <- readFile "src/input/06.txt"
     let grid = lines rawMap
     let gridWithIndex = mapWithIndices grid
     let (c, (x, y)) = findStart gridWithIndex

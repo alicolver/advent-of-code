@@ -18,7 +18,7 @@ type Bounds = (Int,Int)
 
 day14 :: IO ()
 day14 = do
-    input <- readFile "src/14/input.txt"
+    input <- readFile "src/input/14.txt"
     let bots = parseBots input
     let bounds = (101,103)
     let newBots = p1Move bots bounds 100

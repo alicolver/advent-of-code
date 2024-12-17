@@ -25,7 +25,7 @@ parseWord x = case t x of
 day3 :: IO ()
 day3 = do
     print (parseWord "mul(123,45)")
-    input <- readFile "src/03/input.txt"
+    input <- readFile "src/input/03.txt"
     let x =  findMatches "mul\\(([0-9]{1,3}),([0-9]{1,3})\\)|do\\(\\)|don't\\(\\)" input
     print x
     let y = map parseWord x

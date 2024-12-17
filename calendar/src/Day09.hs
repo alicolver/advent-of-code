@@ -9,7 +9,7 @@ digits = map (read . pure)
 
 day9 :: IO ()
 day9 = do
-    input <- readFile "src/09/input.txt"
+    input <- readFile "src/input/09.txt"
     let nums = digits input
     let expanded = solve nums 0 [] True
     let ords = solve' expanded

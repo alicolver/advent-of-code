@@ -8,8 +8,8 @@ import Text.Parsec.String
 
 day5 :: IO ()
 day5 = do
-    rawRules <- readFile "src/05/rules.txt"
-    rawRoutes <- readFile "src/05/routes.txt"
+    rawRules <- readFile "src/input/05_rules.txt"
+    rawRoutes <- readFile "src/input/05_routes.txt"
     let rules = map parseRules (lines rawRules)
     let routes = map parseRoute (lines rawRoutes)
     print (part1 rules routes)

@@ -16,7 +16,7 @@ data Bounds = Bounds {
 
 day8 :: IO ()
 day8 = do
-    rawMap <- readFile "src/08/input.txt"
+    rawMap <- readFile "src/input/08.txt"
     let grid = lines rawMap
     let gridWithIndex = mapToPoint grid
     let antennas = concatMap (filter isAntenna) gridWithIndex

@@ -41,21 +41,6 @@ ghc-options:
 library:
   source-dirs: 
     - src
-    - src/03
-    - src/04
-    - src/05
-    - src/06
-    - src/07
-    - src/08
-    - src/09
-    - src/10
-    - src/11
-    - src/12
-    - src/13
-    - src/14
-    - src/15
-    - src/17
-
 
 executables:
   calendar-exe:

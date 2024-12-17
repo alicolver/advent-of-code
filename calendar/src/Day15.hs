@@ -14,8 +14,8 @@ type Point = (Int,Int)
 
 day15 :: IO ()
 day15 = do
-    inputMap <- readFile "src/15/testMap.txt"
-    coms <- readFile "src/15/testComs.txt"
+    inputMap <- readFile "src/input/15_map.txt"
+    coms <- readFile "src/input/15_coms.txt"
     let grid = mapWithIndices (lines inputMap)
     let commands = map parseCommand (concat (lines coms))
     let walls = map snd (getAll '#' grid)

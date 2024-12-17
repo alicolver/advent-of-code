@@ -4,7 +4,7 @@ import Data.List (sort)
 
 main :: IO ()
 main = do
-    input <- readFile "2024/01/input.txt"
+    input <- readFile "2024/input/01.txt"
     let rows = map parser ( lines input )
     print  ( day1  rows )
     print (day1' (unzip rows))

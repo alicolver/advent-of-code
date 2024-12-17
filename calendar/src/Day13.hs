@@ -39,7 +39,7 @@ parseSystems input = case parse systemsParser "" input of
 
 day13 :: IO()
 day13 = do
-    input <- readFile "src/13/input.txt"
+    input <- readFile "src/input/13.txt"
     let systems = parseSystems input
     print systems
     print $ sum $ map solveSystem systems

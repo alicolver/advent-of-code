@@ -8,7 +8,7 @@ import Data.Universe.Helpers
 
 day4 :: IO ()
 day4 = do
-    input <- readFile "src/04/input.txt"
+    input <- readFile "src/input/04.txt"
     let splitup = lines input
     print (day4' (getAllArrays splitup))
     print (day4_2 splitup)

@@ -76,7 +76,7 @@ getCommand ip coms = (coms !! ip, coms !! (ip+1))
 
 day17 :: IO ()
 day17 = do
-    input <- readFile "src/17/input.txt"
+    input <- readFile "src/input/17.txt"
     let program = parseInput input
     print $ runProgram (ProgState (registers program) 0 []) (commands program)
     print $ search (commands program) (commands program)

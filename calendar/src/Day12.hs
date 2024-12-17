@@ -13,7 +13,7 @@ data Dir = L | U | R | D
 
 day12 :: IO()
 day12 = do
-    input <- readFile "src/12/input.txt"
+    input <- readFile "src/input/12.txt"
     let farm = mapWithIndices $ lines input
     let groups = getSections farm
     let coords = map (map toCoord) groups

@@ -25,7 +25,7 @@ parseEnt input = case parse ent "" input of
 
 day7 :: IO ()
 day7 = do
-    input <- readFile "src/07/input.txt"
+    input <- readFile "src/input/07.txt"
     let psd = map parseEnt (lines input)
     print (sum (map target (filter part1 psd)))
     print (sum (map target (filter part2 psd)))

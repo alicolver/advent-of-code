@@ -19,7 +19,7 @@ parseIntList input = case parse intlist "" input of
 
 day11 :: IO()
 day11 = do
-    input <- readFile "src/11/input.txt"
+    input <- readFile "src/input/11.txt"
     let nums = parseIntList input
     print (solve nums 25)
     print (solve nums 75)
