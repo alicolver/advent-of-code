@@ -1,4 +1,4 @@
-module Day8 (
+module Day08 (
     day8
 ) where
 import Lib (mapWithIndices)

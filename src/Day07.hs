@@ -1,4 +1,4 @@
-module Day7 (
+module Day07 (
     day7
 ) where
 

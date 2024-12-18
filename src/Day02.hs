@@ -1,3 +1,7 @@
+module Day02 (
+    main
+) where
+
 main :: IO ()
 main = do
     input <- readFile "2024/input/02.txt"
