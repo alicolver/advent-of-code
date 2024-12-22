@@ -14,23 +14,27 @@ day19 = do
     input <- readFile "src/input/19.txt"
     let tds = parseInput input
     print tds
-    print $ sum (map (isPossible (fst tds)) (snd tds))
+    let res = uncurry possibilities tds Map.empty
+    print $ length res
+    print $ sum res
 
-isPossible :: [String] -> String -> Int
-isPossible s design = isPossible' (Map.empty) s [head design] (tail design)
+possibilities :: [Towel] -> [Design] -> Map.Map Design Int -> [Int]
+possibilities _ [] _ = []
+possibilities s (d:ds) state = snd updated : possibilities s ds (fst updated)
+    where
+        updated = possibilities' state s [head d] (tail d)
 
-isPossible' :: (Map.Map String Int) -> [String] -> String -> String -> Int
-isPossible' m s toCheck [] = if toCheck `elem` s then 1 else 0
-isPossible' m s toCheck rest
-    | toCheck `elem` s = isPossible'' m s [head rest] (tail rest) + isPossible'' m s (toCheck ++ [head rest]) (tail rest)
-    | otherwise = isPossible'' m s (toCheck ++ [head rest]) (tail rest)
-    where 
-        isPossible'' = do
-            v <- gets $ Map.lookup toCheck
-            case v of
-                Just res -> return res
-                Nothing -> return isPossible' m 
-
+possibilities' :: Map.Map Design Int -> [Towel] -> Design -> Design -> (Map.Map Design Int, Int)
+possibilities' m s toCheck []
+    | toCheck `elem` s = (Map.insert toCheck 1 m, 1)
+    | otherwise = (Map.insert toCheck 0 m, 0)
+possibilities' m s toCheck rest
+    | Map.member (toCheck++rest) m = (m, m Map.! (toCheck++rest))
+    | toCheck `elem` s = (Map.insert (toCheck ++ rest) (r0+r1) m1, r0 +r1)
+    | otherwise = (Map.insert (toCheck ++ rest) (r0) m0, r0)
+    where
+        (m0, r0) = possibilities' m s (toCheck ++ [head rest]) (tail rest)
+        (m1, r1) = possibilities' m0 s [head rest] (tail rest)
 
 parseTowelDesigns :: Parser ([Towel], [Design])
 parseTowelDesigns = do
