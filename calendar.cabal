@@ -41,7 +41,9 @@ library
       Day14
       Day15
       Day17
+      Day19
       Lib
+      Parsing
   other-modules:
       Paths_calendar
   autogen-modules:
@@ -52,6 +54,7 @@ library
   build-depends:
       MemoTrie >=0.6.10
     , base >=4.7 && <5
+    , bytestring-trie >=0.2.7.5
     , containers >=0.6.7
     , parsec >=3.1.16.1
     , regex-posix >=0.96.0.1
@@ -70,6 +73,7 @@ executable calendar-exe
   build-depends:
       MemoTrie >=0.6.10
     , base >=4.7 && <5
+    , bytestring-trie >=0.2.7.5
     , calendar
     , containers >=0.6.7
     , parsec >=3.1.16.1
@@ -90,6 +94,7 @@ test-suite calendar-test
   build-depends:
       MemoTrie >=0.6.10
     , base >=4.7 && <5
+    , bytestring-trie >=0.2.7.5
     , calendar
     , containers >=0.6.7
     , parsec >=3.1.16.1

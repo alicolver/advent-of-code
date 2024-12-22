@@ -2,7 +2,8 @@ module Day15(
     day15
 ) where
 import Lib (mapWithIndices)
-import Data.Maybe (isNothing)
+import Data.Maybe (isNothing, maybe)
+import Data.List (find)
 
 data Command = U | R | D | L deriving (Show, Eq)
 data Res = Res {
@@ -22,7 +23,8 @@ day15 = do
     let boxes = getAll 'O' grid
     let weeGuy = head $ getAll '@' grid
     let points = p1' walls boxes weeGuy commands []
-    mapM_ (printGrids (length (head grid), length grid)) points
+    let allPointsOfInterest = map (\r -> ws r ++ bs r ++ [g r]) points
+    mapM_ (printGrids (length (head grid), length grid)) allPointsOfInterest
     print $ p1 (length grid) (bs (last points))
     let expanded = map expandRow (lines inputMap)
     let p2Grid = mapWithIndices expanded
@@ -32,16 +34,14 @@ day15 = do
     let p2points = p2' p2walls p2Boxes p2weeGuy commands []
     print $ p1 (length p2Grid) (bs (last p2points))
 
-printGrids :: (Int,Int) -> Res -> IO ()
+getCharForPoint :: (Int,Int) -> [Point] -> Char
+getCharForPoint (x,y) ps = fst (maybe ('.', (0,0)) (id) maybePoint)
+    where
+        maybePoint = find (\a -> snd a == (x,y)) ps
+
+printGrids :: (Int,Int) -> [Point] -> IO ()
 printGrids (c,r) points  = do
-    mapM_ putStrLn [[
-        if (x, y) `elem` map snd (ws points)
-            then '#'
-            else if (x,y) `elem` map snd (bs points)
-                then 'O'
-                else if (x,y) == snd (g points)
-                    then '@'
-                    else '.' | x <- [0..c -1]] | y <- reverse [0..r -1]]
+    mapM_ putStrLn [[getCharForPoint (x,y) points | x <- [0..c -1]] | y <- reverse [0..r -1]]
 
 p1 :: Int -> [Point] -> Int
 p1 ys boxes = sum $ map (\(_, (x,y)) -> ((ys-y-1)*100) + x) boxes
