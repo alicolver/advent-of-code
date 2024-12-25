@@ -4,6 +4,7 @@ module Day04 (
 
 import Data.List ( transpose )
 import Lib
+    ( numMatches, doesMatch, getSlidingWindow2d, getDiagonals )
 import Data.Universe.Helpers
 
 day4 :: IO ()

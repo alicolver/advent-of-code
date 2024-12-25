@@ -28,22 +28,30 @@ data ProgState = ProgState {
 handleCommand :: ProgState -> Command -> ProgState
 handleCommand (ProgState r i o) (0,literal) =
     ProgState (Registers (a r `div` (2 ^ getComboValue r literal)) (b r) (c r)) (i + 2) o
+
 handleCommand (ProgState r i o) (1,literal) =
     ProgState (Registers (a r) (b r `xor` literal) (c r)) (i+2) o
+
 handleCommand (ProgState r i o) (2,literal) =
     ProgState (Registers (a r) (getComboValue r literal `mod` 8) (c r)) (i+2) o
+
 handleCommand (ProgState r i o) (3,literal)
     | a r == 0 = ProgState r (i+2) o
     | otherwise = ProgState r literal o
+
 handleCommand (ProgState r i o) (4,_) =
     ProgState (Registers (a r) (b r `xor` c r) (c r)) (i+2) o
+
 handleCommand (ProgState r i o) (5,literal) =
-    ProgState r (i+2) (o ++ [(getComboValue r literal) `mod` 8])
+    ProgState r (i+2) (o ++ [getComboValue r literal `mod` 8])
+
 handleCommand (ProgState r i o) (6,literal) =
     ProgState (Registers (a r) (a r `div` (2 ^ getComboValue r literal)) (c r)) (i + 2) o
+
 handleCommand (ProgState r i o) (7,literal) =
     ProgState (Registers (a r) (b r) (a r `div` (2 ^ getComboValue r literal))) (i + 2) o
-handleCommand _ _ = error "FUCKED!"
+
+handleCommand _ _ = error "Borked!"
 
 getComboValue :: Registers -> Int -> Int
 getComboValue rs 4 = a rs
@@ -73,6 +81,8 @@ loop a program target
 
 getCommand :: Int -> [Int] -> (Int,Int)
 getCommand ip coms = (coms !! ip, coms !! (ip+1))
+
+-- parsing and orchestration
 
 day17 :: IO ()
 day17 = do

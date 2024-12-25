@@ -3,24 +3,47 @@ module Day13(
 ) where
 import Text.Parsec
 import Text.Parsec.String
-import Debug.Trace (trace)
+import Lib (intParser)
 
 data System = System {
-    a :: (Integer,Integer),
-    b :: (Integer,Integer),
-    prize :: (Integer,Integer)
+    a :: (Int,Int),
+    b :: (Int,Int),
+    prize :: (Int,Int)
 } deriving (Show,Eq)
 
-int :: Parser Integer
-int = read <$> many1 digit
+p2multi :: System -> System
+p2multi (System a b (px,py)) = System a b (px+10000000000000,py+10000000000000)
+
+solveSystem :: System -> Int
+solveSystem (System (ax,ay) (bx,by) (px,py)) = calcSolution det $ multiply inverse target
+    where
+        matrix = [[ax,bx],[ay,by]]
+        target = [px,py]
+        det = determinant matrix
+        inverse = [[by,-bx],[-ay,ax]]
+
+calcSolution :: Int -> [Int] -> Int
+calcSolution det [a,b]
+    | (a `mod` det) /= 0 = 0
+    | (b `mod` det) /= 0 = 0
+    | otherwise = (3 * (a `div` det)) + (b `div` det)
+
+multiply :: [[Int]] -> [Int] -> [Int]
+multiply [[ax,ay],[bx,by]] [px,py] = [(ax*px)+(ay*py),(bx*px)+(by*py)]
+
+determinant :: [[Int]] -> Int
+determinant [[ax,ay],[bx,by]] = (ax * by) - (ay * bx)
+
+
+-- parsing and orchestration
 
 system :: Parser System
 system = do
     let parseCoordinates prefix xLabel yLabel = do
             _ <- string prefix >> string xLabel
-            x <- int
+            x <- intParser
             _ <- string ", " >> string yLabel
-            y <- int
+            y <- intParser
             return (x, y)
     (ax, ay) <- parseCoordinates "Button A: " "X+" "Y+"
     _ <- newline
@@ -43,27 +66,4 @@ day13 = do
     let systems = parseSystems input
     print systems
     print $ sum $ map solveSystem systems
-    print $ sum $ map solveSystem (map p2multi systems)
-
-p2multi :: System -> System
-p2multi (System a b (px,py)) = System a b (px+10000000000000,py+10000000000000)
-
-solveSystem :: System -> Integer
-solveSystem (System (ax,ay) (bx,by) (px,py)) = calcSolution det $ multiply inverse target
-    where
-        matrix = [[ax,bx],[ay,by]]
-        target = [px,py]
-        det = determinant matrix
-        inverse = [[by,-bx],[-ay,ax]]
-
-calcSolution :: Integer -> [Integer] -> Integer
-calcSolution det [a,b]
-    | (a `mod` det) /= 0 = 0
-    | (b `mod` det) /= 0 = 0
-    | otherwise = (3 * (a `div` det)) + (b `div` det)
-
-multiply :: [[Integer]] -> [Integer] -> [Integer]
-multiply [[ax,ay],[bx,by]] [px,py] = [((ax*px)+(ay*py)),(bx*px)+(by*py)]
-
-determinant :: [[Integer]] -> Integer
-determinant [[ax,ay],[bx,by]] = (ax * by) - (ay * bx)
+    print $ sum $ map (solveSystem . p2multi) systems

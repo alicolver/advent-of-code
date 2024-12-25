@@ -2,7 +2,7 @@ module Day09 (
     day9
 ) where
 import Data.Maybe (isNothing)
-import Data.List (group, sortBy, scanl', find, findIndex)
+import Data.List (group, scanl')
 
 digits :: String -> [Int]
 digits = map (read . pure)
@@ -61,7 +61,6 @@ swap (index, justs) toInsertInto = group (concat (start ++ [justs] ++ [extras] +
         endEnd = group (drop (index - length (concat start) - length justs - length extras) (concat unfinishedEnd))
         endEnd' = if not (null endEnd) then tail endEnd else []
         end = [startEnd] ++ [replaceNothing] ++ endEnd'
-
 
 unwrap :: [Maybe Int] -> [Int]
 unwrap [] = []

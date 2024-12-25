@@ -2,51 +2,113 @@ module Day15(
     day15
 ) where
 import Lib (mapWithIndices)
-import Data.Maybe (isNothing, maybe)
-import Data.List (find)
+import qualified Data.Map as Map
+import Data.Tuple (swap)
 
 data Command = U | R | D | L deriving (Show, Eq)
-data Res = Res {
-    ws :: [Point],
-    bs :: [Point],
-    g :: Point
-}
-type Point = (Char, (Int,Int))
+type Point = (Int, Int)
 
-day15 :: IO ()
-day15 = do
-    inputMap <- readFile "src/input/test_map.txt"
-    coms <- readFile "src/input/test_coms.txt"
-    let grid = mapWithIndices (lines inputMap)
-    let commands = map parseCommand (concat (lines coms))
-    let walls = getAll '#' grid
-    let boxes = getAll 'O' grid
-    let weeGuy = head $ getAll '@' grid
-    let points = p1' walls boxes weeGuy commands []
-    let allPointsOfInterest = map (\r -> ws r ++ bs r ++ [g r]) points
-    mapM_ (printGrids (length (head grid), length grid)) allPointsOfInterest
-    print $ p1 (length grid) (bs (last points))
-    let expanded = map expandRow (lines inputMap)
-    let p2Grid = mapWithIndices expanded
-    let p2Boxes = getAll '[' p2Grid ++ getAll ']' p2Grid
-    let p2walls = getAll '#' p2Grid
-    let p2weeGuy = head $ getAll '@' p2Grid
-    let p2points = p2' p2walls p2Boxes p2weeGuy commands []
-    print $ p1 (length p2Grid) (bs (last p2points))
-
-getCharForPoint :: (Int,Int) -> [Point] -> Char
-getCharForPoint (x,y) ps = fst (maybe ('.', (0,0)) (id) maybePoint)
+simulate :: Map.Map (Int,Int) Char -> Point -> [Command] -> [Map.Map (Int,Int) Char]
+simulate _ _ [] = []
+simulate m p (c:cs) = nm : simulate nm guy cs
     where
-        maybePoint = find (\a -> snd a == (x,y)) ps
+        (nm, guy) = simulate' m p c
 
-printGrids :: (Int,Int) -> [Point] -> IO ()
-printGrids (c,r) points  = do
-    mapM_ putStrLn [[getCharForPoint (x,y) points | x <- [0..c -1]] | y <- reverse [0..r -1]]
+simulate' :: Map.Map (Int,Int) Char -> Point -> Command -> (Map.Map (Int,Int) Char, Point)
+simulate' m g@(x,y) c
+    | nextIsFree = (Map.insert nextMovePoint '@' mapWithoutGuy, nextMovePoint)
+    | nextIsWall = (m, g)
+    | not canPushBox = (m, g)
+    | otherwise = (Map.insert nextMovePoint '@' updateMapBoxes, nextMovePoint)
+    where
+        nextMovePoint@(x1,y1) = applyToPoint c g
+        nextIsFree = not $ Map.member nextMovePoint m
+        nextMoveChar = m Map.! nextMovePoint
+        mapWithoutGuy = Map.delete (x,y) m
+        nextIsWall = nextMoveChar == '#'
+        otherHalfOfBox = if nextMoveChar == ']' then (x1-1,y1) else (x1+1,y1)
+        canPushBox = if c == L || c == R
+            then canPushBoxLR m nextMovePoint c
+            else canPushBoxUD m (nextMovePoint, otherHalfOfBox) c
+        updateMapBoxes = if c == L || c == R
+            then updateBoxesLR mapWithoutGuy nextMovePoint c
+            else updateBoxesUD mapWithoutGuy (nextMovePoint, otherHalfOfBox) c
 
-p1 :: Int -> [Point] -> Int
-p1 ys boxes = sum $ map (\(_, (x,y)) -> ((ys-y-1)*100) + x) boxes
+canPushBoxLR :: Map.Map (Int, Int) Char -> Point -> Command -> Bool
+canPushBoxLR m p@(x,y) c
+    | isEmptySpace = True
+    | isWall = False
+    | otherwise = canPushBoxLR m (applyToPoint c p) c
+    where
+        isEmptySpace = not $ Map.member (x,y) m
+        isWall = m Map.! (x,y) == '#'
 
-expandRow :: [Char] -> [Char]
+canPushBoxUD :: Map.Map (Int, Int) Char -> (Point,Point) -> Command -> Bool
+canPushBoxUD m (p1,p2) c
+    | isEmptySpace = True
+    | isWall = False
+    | otherwise = box1Pushable && box2Pushable
+    where
+        p1'@(x1,y1) = applyToPoint c p1
+        p2'@(x2,y2) = applyToPoint c p2
+        isEmptySpace = not (Map.member p1' m) && not (Map.member p2' m)
+        c1 = if Map.member p1' m then Just (m Map.! p1') else Nothing
+        c2 = if Map.member p2' m then Just (m Map.! p2') else Nothing
+        isWall = c1 == Just '#' || c2 == Just '#'
+        isBoxAbove1 = c1 == Just '[' || c1 == Just ']'
+        isBoxAbove2 = c2 == Just '[' || c2 == Just ']'
+        p1'' = if c1 == Just '[' then (x1+1,y1) else (x1-1,y1)
+        p2'' = if c2 == Just '[' then (x2+1,y2) else (x2-1,y2)
+        box1Pushable = not isBoxAbove1 || canPushBoxUD m (p1',p1'') c
+        box2Pushable = not isBoxAbove2 || canPushBoxUD m (p2',p2'') c
+
+updateBoxesUD :: Map.Map Point Char -> (Point, Point) -> Command -> Map.Map Point Char
+updateBoxesUD m (p1, p2) c
+    | isEmptySpace = m
+    | otherwise =
+        Map.insert p1' (m Map.! p1) $
+        Map.insert p2' (m Map.! p2) updatedMapAfterP2
+    where
+        p1'@(x1, y1) = applyToPoint c p1
+        p2'@(x2, y2) = applyToPoint c p2
+        isEmptySpace = not (Map.member p1 m) && not (Map.member p2 m)
+        c1 = if Map.member p1' m then Just (m Map.! p1') else Nothing
+        c2 = if Map.member p2' m then Just (m Map.! p2') else Nothing
+        isBoxAbove1 = c1 == Just '[' || c1 == Just ']'
+        isBoxAbove2 = c2 == Just '[' || c2 == Just ']'
+        p1'' = if c1 == Just '[' then (x1+1,y1) else (x1-1,y1)
+        p2'' = if c2 == Just '[' then (x2+1,y2) else (x2-1,y2)
+        updatedMapAfterP1 =
+            if isBoxAbove1
+                then updateBoxesUD (Map.delete p1 m) (p1', p1'') c
+                else Map.delete p1 m
+        updatedMapAfterP2 =
+            if isBoxAbove2
+                then updateBoxesUD (Map.delete p2 updatedMapAfterP1) (p2', p2'') c
+                else Map.delete p2 updatedMapAfterP1
+
+updateBoxesLR :: Map.Map Point Char -> Point -> Command -> Map.Map Point Char
+updateBoxesLR m p c
+    | not (Map.member p m) = m
+    | otherwise = Map.insert newP currentChar updatedMap
+    where
+        currentChar = m Map.! p
+        newP = applyToPoint c p
+        mapWithoutCurrentPiece = Map.delete p m
+        updatedMap = updateBoxesLR mapWithoutCurrentPiece newP c
+
+printGrids :: Point -> Map.Map Point Char -> IO ()
+printGrids (c,r) points  = mapM_ putStrLn [[
+                            if Map.member (x,y) points
+                                then points Map.! (x,y)
+                                else '.'
+                            | x <- [0..c -1]] | y <- reverse [0..r -1]
+    ]
+
+solve :: Int -> [Point] -> Int
+solve ys boxes = sum $ map (\(x,y) -> (ys-y-1)*100 + x) boxes
+
+expandRow :: String -> String
 expandRow [] = []
 expandRow (c:cs)
     | c == '#' = "##" ++ expandRow cs
@@ -55,91 +117,37 @@ expandRow (c:cs)
     | c == '@' = "@." ++ expandRow cs
     | otherwise = error "Borked!"
 
-p1' :: [Point] -> [Point] -> Point -> [Command] -> [Res] -> [Res]
-p1' walls boxes guy [] res = res ++ [Res walls boxes guy]
-p1' walls boxes weeGuy (c:cs) res = p1' walls newBoxes newWeeGuy cs (res ++ [Res walls boxes weeGuy])
+applyToPoint :: Command -> Point -> Point
+applyToPoint L (x,y) = (x-1,y)
+applyToPoint R (x,y) = (x+1,y)
+applyToPoint U (x,y) = (x,y+1)
+applyToPoint D (x,y) = (x,y-1)
+
+-- parsing etc
+
+day15 :: IO ()
+day15 = do
+    inputMap <- readFile "src/input/15_map.txt"
+    coms <- readFile "src/input/15_coms.txt"
+    let commands = map parseCommand (concat (lines coms))
+    let (grid, startGuy, rows) = setUpGrid inputMap
+    let grids = simulate grid startGuy commands
+    -- mapM_ (printGrids (length (head p2Grid), length p2Grid)) grids
+    print $ solve rows (getLeftSideOfBoxes grids)
+
+setUpGrid :: String -> (Map.Map Point Char, Point, Int)
+setUpGrid inputMap = (grid, startGuy, length p2Grid)
     where
-        (newWeeGuy, newBoxes) = getNextPoint walls boxes weeGuy c
+        p2Grid = mapWithIndices $ map expandRow (lines inputMap)
+        filteredP2Grid = concatMap (filter (\a -> fst a /= '.')) p2Grid
+        grid = Map.fromList $ map swap filteredP2Grid
+        startGuy = snd $ head $ concatMap (filter (\a -> fst a == '@')) p2Grid
 
-p2' :: [Point] -> [Point] -> Point -> [Command] -> [Res] -> [Res]
-p2' walls boxes guy [] res = res ++ [Res walls boxes guy]
-p2' walls boxes weeGuy (c:cs) res = p2' walls newBoxes newWeeGuy cs (res ++ [Res walls boxes weeGuy])
+getLeftSideOfBoxes :: [Map.Map Point Char] -> [Point]
+getLeftSideOfBoxes grids = map fst leftBoxOnly
     where
-        (newWeeGuy, newBoxes) = p2'' walls boxes weeGuy c
-
-p2'' :: [Point] -> [Point] -> Point -> Command -> (Point, [Point])
-p2'' walls boxes guy c
-    | isFree = (newPoint, boxes)
-    | isWall = (guy, boxes)
-    | not canPush = (guy, boxes)
-    | otherwise = (newPoint, newBoxes)
-    where
-        isFree = snd newPoint `notElem` map snd boxes && snd newPoint `notElem` map snd walls
-        newPoint = applyToPoint guy c
-        isWall = snd newPoint `elem` map snd walls
-        canPush = canPushBox walls boxes newPoint c
-        newBoxes = if canPush then updateBoxes' walls boxes newPoint c else boxes
-
-updateBoxes' :: [Point] -> [Point] -> Point -> Command -> [Point]
-updateBoxes' walls boxes boxPos@(ch, (x,y)) c
-    | not isBox = []
-    | c == L = (ch, (x-1,y)) : updateBoxes' walls boxes (nlChar, (x-1, y)) c
-    | c == R = (ch, (x+1,y)) : updateBoxes' walls boxes (nlChar, (x+1, y)) c
-    | otherwise = []
-    where
-        nlChar = if ch == '[' then ']' else '['
-        isBox = snd boxPos `elem` map snd boxes
-
-getNextPoint :: [Point] -> [Point] -> Point -> Command -> (Point, [Point])
-getNextPoint walls boxes guy c
-    | isFree = (newPoint, boxes)
-    | isWall || cantShiftBoxes = (guy, boxes)
-    | otherwise = (newPoint, newBoxes)
-    where
-        newPoint = applyToPoint guy c
-        isWall = snd newPoint `elem` map snd walls
-        isFree = snd newPoint `notElem` map snd boxes && snd newPoint `notElem` map snd walls
-        maybeNewElem = findGapOrNothing walls boxes newPoint c
-        cantShiftBoxes = isNothing maybeNewElem
-        newBoxes = if cantShiftBoxes then boxes else updateBoxes boxes newPoint maybeNewElem
-
-updateBoxes :: [Point] -> Point -> Maybe Point -> [Point]
-updateBoxes _ _ Nothing = error "Borked!"
-updateBoxes boxes np (Just toSwap) = takeWhile (\a -> snd a /= snd np) boxes ++ [toSwap] ++ end
-    where
-        dropped = dropWhile (\a -> snd a /= snd np) boxes
-        end = if null dropped then [] else tail dropped
-
-canPushBox :: [Point] -> [Point] -> Point -> Command -> Bool
-canPushBox walls boxes boxPos@(ch, (x,y)) c
-    | isWall = False
-    | isBox && (c == L || c == R) = canPushBox walls boxes np c
-    | isBox = canPushBox walls boxes np c && canPushBox walls boxes nnp c
-    | otherwise = True
-    where
-        np = applyToPoint boxPos c
-        nnp = if fst np == ']' then applyToPoint (ch, (x-1,y)) c else applyToPoint (ch, (x+1,y)) c
-        isWall = snd np `elem` map snd walls
-        isBox = snd np `elem` map snd boxes
-
-findGapOrNothing :: [Point] -> [Point] -> Point -> Command -> Maybe Point
-findGapOrNothing walls boxes boxPos c
-    | isWall = Nothing
-    | isBox = findGapOrNothing walls boxes np c
-    | otherwise = Just np
-    where
-        np = applyToPoint boxPos c
-        isWall = snd np `elem` map snd walls
-        isBox = snd np `elem` map snd boxes
-
-applyToPoint :: Point -> Command -> Point
-applyToPoint (c, (x,y)) L = (c, (x-1,y))
-applyToPoint (c, (x,y)) R = (c, (x+1,y))
-applyToPoint (c, (x,y)) U = (c, (x,y+1))
-applyToPoint (c, (x,y)) D = (c, (x,y-1))
-
-getAll :: Char -> [[Point]] -> [Point]
-getAll c = concatMap (filter (\a -> fst a == c))
+        mapAsList = Map.toList $ last grids
+        leftBoxOnly = filter (\a -> snd a == '[') mapAsList
 
 parseCommand :: Char -> Command
 parseCommand '^' = U

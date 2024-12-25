@@ -4,7 +4,6 @@ module Day14(
 import Text.Parsec
 import Text.Parsec.String
 import Data.Maybe (isNothing)
-import Debug.Trace
 import Data.List (sort, group, minimumBy, intercalate)
 import Data.Ord (comparing)
 
@@ -39,14 +38,13 @@ p2 bots (c,r) = do
         minScore = minimumBy (comparing fst) allScores
 
 printGrids :: ([String], Int) -> IO ()
-printGrids (g,i) = do
-    writeFile ("src/14/trees/" ++ (show i) ++ ".txt") (intercalate "\n" g)
+printGrids (g,i) = writeFile ("src/14/trees/" ++ show i ++ ".txt") (intercalate "\n" g)
 
 getQuads :: [Bot] -> Bounds -> Int
 getQuads bots bounds = product (map length botsByQuads)
     where
         botsInQuads = map (quadForBot bounds) bots
-        botsByQuads = group (sort (filter (/= M) (botsInQuads)))
+        botsByQuads = group (sort (filter (/= M) botsInQuads))
 
 quadForBot :: Bounds -> Bot -> Quad
 quadForBot  (bx,by) (Bot (x,y) _)
@@ -60,7 +58,7 @@ quadForBot  (bx,by) (Bot (x,y) _)
         halfY = by `div` 2
 
 moveBot :: Bounds -> Int -> Bot -> Bot
-moveBot (c,r) n (Bot (px,py) (vx,vy)) = Bot ((px + (vx * n)) `mod` c, (py + vy * n) `mod` r) (vx,vy)
+moveBot (c,r) n (Bot (px,py) (vx,vy)) = Bot ((px + vx * n) `mod` c, (py + vy * n) `mod` r) (vx,vy)
 
 int :: Parser Int
 int = do
