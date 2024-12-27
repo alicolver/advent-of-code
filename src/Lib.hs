@@ -1,6 +1,7 @@
 module Lib
     ( numMatches,
     doesMatch,
+    slidingWindow,
     getSlidingWindow2d,
     getDiagonals,
     mapWithIndices,
@@ -29,6 +30,11 @@ findMatches pattern input = getAllTextMatches (input =~ pattern) :: [String]
 
 doesMatch :: String -> String -> Bool
 doesMatch pattern input = input =~ pattern
+
+slidingWindow :: Int -> [a] -> [[a]]
+slidingWindow n xs
+    | n > length xs = []
+    | otherwise = take n xs : slidingWindow n (tail xs)
 
 getSlidingWindow2d :: Int -> [[a]] -> [[[a]]]
 getSlidingWindow2d window matrix
