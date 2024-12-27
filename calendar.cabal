@@ -45,6 +45,7 @@ library
       Day17
       Day19
       Day22
+      Day25
       Lib
       Parsing
   other-modules:
